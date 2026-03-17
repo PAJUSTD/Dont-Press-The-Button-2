@@ -23,7 +23,7 @@ button {
 }
 #version {
     position: absolute;
-    top: 95%;
+    top: 92%;
     left: 50%;
     transform: translateX(-50%);
     color:rgba(240, 255, 255, 0.959);
@@ -240,4 +240,18 @@ button {
 @keyframes flash-animation {
     0% { opacity: 0.8; } /* Насколько ярко мигает (от 0 до 1) */
     100% { opacity: 0; }
+}
+
+body {
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    height: -webkit-fill-available; /* Исправляет высоту в Safari на iPhone */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1a1a1a;
+    font-family: sans-serif;
+    overflow: hidden;
+    position: fixed; /* Запрещает случайный скролл на телефоне */
 }

@@ -118,7 +118,7 @@ function crushButton() {
 function dj() {
     new Audio("theme2.mp3").play();
     triggerShake();
-   document.getElementById('kon').innerText = "Концовка: 3 (DJ PARTY!)";
+   document.getElementById('kon').innerText = "Концовка: 3 (Диджей)";
 
     btn.classList.add('rainbow-active');
 
@@ -129,7 +129,7 @@ function dj() {
 
 function blue() {
     triggerShake();
-   document.getElementById('kon').innerText = "Концовка: 4 (Теперь Ты Голубой)";
+   document.getElementById('kon').innerText = "Концовка: 4 (Оу Май)";
     const sound = new Audio("https://www.myinstants.com/media/sounds/ia-nasral-v-turbinu-samoleta.mp3").play()
     btn.style.backgroundColor = 'blue';
     btn.style.boxShadow = '0 0 15px blue'; // Добавили параметры тени
@@ -156,7 +156,7 @@ function crushButton2() {
         triggerShake();
         
         
-        document.getElementById('kon').innerText = "Концовка: 5 (Вызвал самолет, негодяй)";
+        document.getElementById('kon').innerText = "Концовка: 5 (Самолёт)";
         document.body.style.backgroundColor = "#272727"; 
         setTimeout(() => {
         }, 100);
