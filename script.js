@@ -1,3 +1,41 @@
+// Список всех файлов для предзагрузки
+const preloadConfig = {
+    images: [
+        "https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/GlutenFreeNiceWombatFloof-x_IDxtwcgejY48Qg/c7037cdd-f4e5-4b06-95bb-e762a2a1bea3/preview.jpg",
+        "https://photoshop-kopona.com/uploads/posts/2020-03/1585408104_plane-6.jpg",
+        "https://static-cdn.jtvnw.net"
+    ],
+    sounds: [
+        "https://www.soundjay.com/mechanical_c2026/sounds/explosion-01.mp3",
+        "https://www.myinstants.com/media/sounds/cannon.mp3",
+        "https://www.myinstants.com/media/sounds/ia-nasral-v-turbinu-samoleta.mp3",
+        "nobody.mp3",
+        "idk.mp3",
+        "https://www.myinstants.com/media/sounds/otbivka-dlia-shou.mp3"
+    ]
+};
+
+// Функция загрузки
+function startPreload() {
+    // Грузим картинки
+    preloadConfig.images.forEach(url => {
+        const img = new Image();
+        img.src = url;
+    });
+
+    // Грузим звуки
+    preloadConfig.sounds.forEach(url => {
+        const audio = new Audio();
+        audio.src = url;
+        audio.preload = "auto";
+    });
+}
+
+// Запускаем немедленно
+startPreload();
+
+
+
 const btn = document.getElementById('mainButton');
 
 // Теперь у нас два крутых эффекта
