@@ -1,0 +1,243 @@
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1a1a1a;
+    font-family: sans-serif;
+    overflow: hidden; /* Чтобы элементы не вылетали за края */
+}
+
+button {
+    padding: 20px 40px;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    background-color: #ff4c4c;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgb(255, 0, 0);
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+#version {
+    position: absolute;
+    top: 95%;
+    left: 50%;
+    transform: translateX(-50%);
+    color:rgba(240, 255, 255, 0.959);
+    opacity: 0.25;
+}
+#kon {
+    position: absolute;
+    top: 0%;
+    left: 50%;
+    transform: translateX(-50%);
+    color:rgba(240, 255, 255, 0.959);
+}
+#kon2 {
+    position: absolute;
+    top: 4%;
+    left: 50%;
+    transform: translateX(-50%);
+    color:rgba(240, 255, 255, 0.959);
+}
+
+
+/* Эффект нажатия */
+button:active {
+    transform: translateY(4px);
+    box-shadow: 0 4px 0 #b33030;
+}
+
+/* Стиль для одного осколка кнопки */
+.shard {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: #ff4c4c; /* Цвет как у кнопки */
+    border-radius: 4px;
+    pointer-events: none; /* Чтобы они не мешали кликам */
+    z-index: 100;
+}
+
+/* Анимация разлета */
+@keyframes explode {
+    to {
+        transform: translate(var(--dx), var(--dy)) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+
+/* Тяжелый объект (пресс) */
+.crusher {
+    position: absolute;
+    top: -400px; /* Прячем повыше, если картинка большая */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;  /* Подгони под размер своей картинки */
+    height: 300px; /* Подгони под размер своей картинки */
+    
+    /* Добавляем картинку */
+    background-image: url('https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/SpunkyScaryDaikonTheRinger-odftguyj1KT0pIap/983471aa-4649-4bb5-a14b-050997593609/preview.jpg'); 
+    background-size: contain; /* Картинка впишется в блок */
+    background-repeat: no-repeat;
+    background-position: bottom;
+    
+    z-index: 10;
+    pointer-events: none;
+}
+
+
+/* Анимация падения пресса */
+@keyframes crush-down {
+    0% { top: calc(0% - 200px); }
+    100% { top: calc(43% - 200px); } /* Прилетает прямо на кнопку */
+}
+
+@keyframes crush-left {
+    0% { 
+        top: 30%; /* Короткий отскок вверх */
+        left: 100%;
+    }
+    100% { 
+        top: 30%;
+        left: -200vw; /* Улетает вправо */
+    }
+}
+
+
+@keyframes crush-leftbtn {
+    0% { 
+        top: 30%; /* Короткий отскок вверх */
+        left: 100%;
+    }
+    100% { 
+        top: 30%;
+        left: -200vw; /* Улетает вправо */
+    }
+}
+
+
+ 
+/* Анимация сплющивания кнопки */
+
+
+/* Анимация тряски */
+@keyframes screen-shake {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    10% { transform: translate(-5px, -5px) rotate(-1deg); }
+    30% { transform: translate(5px, 5px) rotate(1deg); }
+    50% { transform: translate(-5px, 5px) rotate(-1deg); }
+    70% { transform: translate(5px, -5px) rotate(1deg); }
+    90% { transform: translate(-2px, 2px) rotate(0deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* Класс, который мы будем вешать на body */
+.shake-active {
+    animation: screen-shake 0.3s ease-in-out;
+}
+
+@keyframes walk {
+    0% { 
+        /* Находимся в точке удара (центр) */
+        top: calc(43% - 200px); 
+        transform: translateX(-50%); 
+    }
+    50% { 
+        top: calc(43% - 250px); 
+        transform: translateX(25vw); 
+    }
+    100% { 
+        /* Уходим вправо за край экрана */
+        top: calc(43% - 200px);
+        transform: translateX(50vw); /* 200vw гарантированно выведет за экран */
+    }
+}
+
+
+
+body {
+    /* Отключаем прокрутку (мотать нельзя) */
+    overflow: hidden; 
+    position: fixed;
+    width: 100%;
+    height: 100%;
+
+    /* Отключаем выделение текста и синие вспышки при нажатии */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+
+    /* Запрещаем жесты (зум, обновление свайпом вниз и т.д.) */
+    touch-action: none; 
+    
+    /* Убираем стандартные контуры при фокусе */
+    outline: none;
+}
+
+button {
+    /* Чтобы кнопка не выделялась при долгом нажатии */
+    -webkit-touch-callout: none;
+}
+
+
+/* Анимация перелива */
+@keyframes rainbow {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+/* Класс, который мы включим */
+.rainbow-active {
+    animation: rainbow 2s linear infinite !important;
+}
+
+/* Дополнительно для фона, чтобы он стал цветным (hue-rotate не работает на сером/белом) */
+.body-rainbow {
+    background-color: #ff0000 !important; /* Базовый красный для старта радуги */
+    animation: rainbow 3s linear infinite;
+}
+
+#bg-rainbow-layer {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: -1; /* Уходит под кнопку */
+    background-color: red;
+    opacity: 0; /* Скрыт по умолчанию */
+    transition: opacity 0.5s;
+}
+
+.body-rainbow #bg-rainbow-layer {
+    opacity: 1; /* Появляется в режиме DJ */
+    animation: rainbow 2s linear infinite;
+}
+
+
+
+/* Белый слой для вспышек */
+#flash-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: white;
+    opacity: 0; /* По умолчанию не видно */
+    pointer-events: none; /* Не мешает кликам */
+    z-index: 9999;
+}
+
+/* Анимация вспышки */
+.flash-active {
+    animation: flash-animation 0.2s ease-out;
+}
+
+@keyframes flash-animation {
+    0% { opacity: 0.8; } /* Насколько ярко мигает (от 0 до 1) */
+    100% { opacity: 0; }
+}
