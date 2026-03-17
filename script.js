@@ -78,7 +78,7 @@ function crushButton() {
     }, 400);
 }
 function dj() {
-    new Audio("theme2.mp3").play();
+    new Audio("https://www.myinstants.com/media/sounds/otbivka-dlia-shou.mp3").play();
     triggerShake();
    document.getElementById('kon').innerText = "Концовка: 3 ()";
 
