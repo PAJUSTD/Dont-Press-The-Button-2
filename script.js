@@ -6,7 +6,7 @@ const preloadConfig = {
         "https://static-cdn.jtvnw.net"
     ],
     sounds: [
-        "https://www.soundjay.com/mechanical_c2026/sounds/explosion-01.mp3",
+        "https://www.soundjay.com/mechanical/sounds/explosion-01.mp3",
         "https://www.myinstants.com/media/sounds/cannon.mp3",
         "https://www.myinstants.com/media/sounds/ia-nasral-v-turbinu-samoleta.mp3",
         "nobody.mp3",
@@ -15,30 +15,68 @@ const preloadConfig = {
     ]
 };
 
-// Функция загрузки
+// Кэш для предзагруженных аудио
+const audioCache = {};
+
+// Функция предзагрузки с обработкой ошибок
 function startPreload() {
     // Грузим картинки
     preloadConfig.images.forEach(url => {
         const img = new Image();
         img.src = url;
+        img.onerror = () => console.log(`Не удалось загрузить изображение: ${url}`);
     });
 
-    // Грузим звуки
+    // Грузим звуки в кэш
     preloadConfig.sounds.forEach(url => {
         const audio = new Audio();
         audio.src = url;
         audio.preload = "auto";
+        audio.onerror = () => console.log(`Не удалось загрузить звук: ${url}`);
+        audioCache[url] = audio;
     });
 }
 
-// Запускаем немедленно
-startPreload();
+// Функция для безопасного воспроизведения звука
+function playSound(url) {
+    if (audioCache[url]) {
+        // Используем кэшированный аудио элемент
+        const audio = audioCache[url].cloneNode();
+        audio.play().catch(e => console.log("Ошибка воспроизведения:", e));
+    } else {
+        // Если нет в кэше, создаём новый
+        const audio = new Audio(url);
+        audio.play().catch(e => console.log("Ошибка воспроизведения:", e));
+    }
+}
 
+// Функция тряски экрана
+function triggerShake() {
+    document.body.classList.add('shake-active');
+    setTimeout(() => {
+        document.body.classList.remove('shake-active');
+    }, 300);
+}
 
+// Функция сброса стилей кнопки
+function resetButtonStyles() {
+    btn.style = '';
+    btn.classList.remove('rainbow-active');
+    btn.innerText = 'Нажми меня';
+    btn.style.backgroundColor = '#4CAF50';
+    btn.style.boxShadow = '0 0 10px rgba(76, 175, 80, 0.5)';
+    btn.style.opacity = '1';
+    btn.style.transform = '';
+    btn.style.pointerEvents = 'auto';
+}
 
+// Получаем кнопку и проверяем её существование
 const btn = document.getElementById('mainButton');
+if (!btn) {
+    console.error('Кнопка с id "mainButton" не найдена!');
+}
 
-// Теперь у нас два крутых эффекта
+// Массив эффектов
 const effects = [
     explodeButton,
     crushButton,
@@ -49,36 +87,32 @@ const effects = [
     nothing
 ];
 
-function triggerShake() {
-    // Добавляем класс тряски к body
-    document.body.classList.add('shake-active');
+// Запускаем предзагрузку
+startPreload();
 
-    // Удаляем класс через 300мс, чтобы можно было трясти снова
-    setTimeout(() => {
-        document.body.classList.remove('shake-active');
-    }, 300);
+// Обработчик клика
+if (btn) {
+    btn.addEventListener('click', () => {
+        btn.style.pointerEvents = 'none';
+        
+        const randomIndex = Math.floor(Math.random() * effects.length);
+        effects[randomIndex]();
+
+        setTimeout(() => {
+            location.reload();
+        }, 5000);
+    });
 }
 
-
-btn.addEventListener('click', () => {
-    btn.style.pointerEvents = 'none'; // Блокируем сразу
-    
-    const randomIndex = Math.floor(Math.random() * effects.length);
-    effects[randomIndex]();
-
-    // Перезагрузка через 5 секунд
-    setTimeout(() => {
-        location.reload();
-    }, 5000);
-});
-
-// --- ЭФФЕКТ 1: ВЗРЫВ (тот, что мы делали раньше) ---
+// --- ЭФФЕКТ 1: ВЗРЫВ ---
 function explodeButton() {
     btn.style.opacity = '0';
     const rect = btn.getBoundingClientRect();
-    const sound2 = new Audio("https://www.soundjay.com/mechanical_c2026/sounds/explosion-01.mp3")
-    sound2.play();
-    document.getElementById('kon').innerText = "Концовка: 1 (ВЗРЫВ)";
+    playSound("https://www.soundjay.com/mechanical/sounds/explosion-01.mp3");
+    
+    const konElement = document.getElementById('kon');
+    if (konElement) konElement.innerText = "Концовка: 1 (ВЗРЫВ)";
+    
     for (let i = 0; i < 30; i++) {
         const shard = document.createElement('div');
         shard.className = 'shard';
@@ -92,12 +126,12 @@ function explodeButton() {
         setTimeout(() => shard.remove(), 1000);
     }
 }
-// --- ЭФФЕКТ 2: ПРЕСС (НОВЫЙ) ---
+
+// --- ЭФФЕКТ 2: ПРЕСС ---
 function crushButton() {
     const crusher = document.createElement('div');
     crusher.className = 'crusher';
     
-    // Прямая ссылка на прозрачную наковальню для примера
     const imageUrl = "https://static-cdn.jtvnw.net/twitch-clips-thumbnails-prod/GlutenFreeNiceWombatFloof-x_IDxtwcgejY48Qg/c7037cdd-f4e5-4b06-95bb-e762a2a1bea3/preview.jpg"; 
     crusher.style.backgroundImage = `url('${imageUrl}')`;
 
@@ -105,43 +139,73 @@ function crushButton() {
     crusher.style.animation = "crush-down 0.4s ease-in forwards";
 
     setTimeout(() => {
-        const sound = new Audio("https://www.myinstants.com/media/sounds/cannon.mp3")
-        sound.play();
+        playSound("https://www.myinstants.com/media/sounds/cannon.mp3");
         triggerShake();
-        document.getElementById('kon').innerText = "Концовка: 2 (T2X2)";
+        
+        const konElement = document.getElementById('kon');
+        if (konElement) konElement.innerText = "Концовка: 2 (T2X2)";
+        
         btn.style.transition = "transform 0s";
         btn.style.transform = "scaleY(0.1) translateY(300px)"; 
-        setTimeout(() => {
-        }, 100);
     }, 400);
+    
+    setTimeout(() => {
+        crusher.remove();
+    }, 1000);
 }
+
+// --- ЭФФЕКТ 3: ДИДЖЕЙ ---
 function dj() {
-    new Audio("https://www.myinstants.com/media/sounds/otbivka-dlia-shou.mp3").play();
+    playSound("https://www.myinstants.com/media/sounds/otbivka-dlia-shou.mp3");
     triggerShake();
-   document.getElementById('kon').innerText = "Концовка: 3 (Диджей)";
+    
+    const konElement = document.getElementById('kon');
+    if (konElement) konElement.innerText = "Концовка: 3 (Диджей)";
 
     btn.classList.add('rainbow-active');
 
-    // Тряска в ритм (каждые 400мс)
+    // Добавляем стили для rainbow эффекта
+    const style = document.createElement('style');
+    style.textContent = `
+        .rainbow-active {
+            animation: rainbow 2s linear infinite;
+        }
+        @keyframes rainbow {
+            0% { background-color: #ff0000; }
+            16% { background-color: #ffff00; }
+            33% { background-color: #00ff00; }
+            50% { background-color: #00ffff; }
+            66% { background-color: #0000ff; }
+            83% { background-color: #ff00ff; }
+            100% { background-color: #ff0000; }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Тряска в ритм
     const interval = setInterval(triggerShake, 500);
+    setTimeout(() => clearInterval(interval), 4000);
 }
 
-
+// --- ЭФФЕКТ 4: ОУ МАЙ ---
 function blue() {
     triggerShake();
-   document.getElementById('kon').innerText = "Концовка: 4 (Оу Май)";
-    const sound = new Audio("https://www.myinstants.com/media/sounds/ia-nasral-v-turbinu-samoleta.mp3").play()
+    
+    const konElement = document.getElementById('kon');
+    if (konElement) konElement.innerText = "Концовка: 4 (Оу Май)";
+    
+    playSound("https://www.myinstants.com/media/sounds/ia-nasral-v-turbinu-samoleta.mp3");
     btn.style.backgroundColor = 'blue';
-    btn.style.boxShadow = '0 0 15px blue'; // Добавили параметры тени
+    btn.style.boxShadow = '0 0 15px blue';
     btn.innerText = "ТЫ ТЕПЕРЬ ГОЛУБОЙ :)";
 }
 
+// --- ЭФФЕКТ 5: САМОЛЁТ ---
 function crushButton2() {
     const crusher = document.createElement('div');
     crusher.className = 'crusher';
     
-    // Прямая ссылка на прозрачную наковальню для примера
-    const imageUrl = "https://photoshop-kopona.com/uploads/posts/2020-03/1585408104_plane-6.jpg "; 
+    const imageUrl = "https://photoshop-kopona.com/uploads/posts/2020-03/1585408104_plane-6.jpg"; 
     crusher.style.backgroundImage = `url('${imageUrl}')`;
 
     document.body.appendChild(crusher);
@@ -151,33 +215,47 @@ function crushButton2() {
     setTimeout(() => {
         btn.style.animation = "none"; 
         btn.style.transition = "transform 0.1s ease-out"; 
-        const sound = new Audio("https://www.myinstants.com/media/sounds/cannon.mp3")
-        sound.play();
+        playSound("https://www.myinstants.com/media/sounds/cannon.mp3");
         triggerShake();
         
+        const konElement = document.getElementById('kon');
+        if (konElement) konElement.innerText = "Концовка: 5 (Самолёт)";
         
-        document.getElementById('kon').innerText = "Концовка: 5 (Самолёт)";
         document.body.style.backgroundColor = "#272727"; 
-        setTimeout(() => {
-        }, 100);
     }, 400);
+    
+    setTimeout(() => {
+        crusher.remove();
+    }, 1500);
 }
 
-
+// --- ЭФФЕКТ 6: ПУСТОТА ---
 function nobody() {
     triggerShake();
-    const sound = new Audio("nobody.mp3").play()
+    playSound("nobody.mp3");
     btn.style.backgroundColor = 'black';
-    btn.style.boxShadow = '0 0 15px black'; // Добавили параметры тени
+    btn.style.boxShadow = '0 0 15px black';
     btn.innerText = "Ты больше не в сознании. ты ничего не чувствуешь.";
     document.body.style.backgroundColor = "#0c0c0c";
-    document.getElementById('kon').innerText = "Концовка: 6 (Пустота.)";
-    document.getElementById('version').innerText = "D.E.A.T.H";
+    
+    const konElement = document.getElementById('kon');
+    if (konElement) konElement.innerText = "Концовка: 6 (Пустота.)";
+    
+    const versionElement = document.getElementById('version');
+    if (versionElement) versionElement.innerText = "D.E.A.T.H";
 }
 
-
+// --- ЭФФЕКТ 7: ПОВЕЗЛО ---
 function nothing() {
-    const sound = new Audio("idk.mp3").play()
+    playSound("idk.mp3");
     btn.innerText = "Тебе повезло. Ничего не произошло.";
-    document.getElementById('kon').innerText = "Концовка: 7 (Повезло)";
+    
+    const konElement = document.getElementById('kon');
+    if (konElement) konElement.innerText = "Концовка: 7 (Повезло)";
+    
+    setTimeout(() => {
+        resetButtonStyles();
+    }, 3000);
 }
+
+document.head.appendChild(styleElement);
