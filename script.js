@@ -118,7 +118,7 @@ function crushButton() {
 function dj() {
     new Audio("https://www.myinstants.com/media/sounds/otbivka-dlia-shou.mp3").play();
     triggerShake();
-   document.getElementById('kon').innerText = "Концовка: 3";
+   document.getElementById('kon').innerText = "Концовка: 3 (Диджей)";
 
     btn.classList.add('rainbow-active');
 
